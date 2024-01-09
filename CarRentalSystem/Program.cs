@@ -18,20 +18,110 @@ namespace CarRentalSystem
             // AddCustomer();
             //CreateLease();
             //FindCarById();
-            // FindCustomerById();
+            //FindLeaseById();
+            //FindCustomerById(101);
             //CheckActiveLeases();
             //ListAvailableCars();
             // ListCustomers();
             //ListLeaseHistory();
+            // LeaseCalculator();
             //ListRentedCars();
+            // RetrievePaymentHistory();
             // RecordPayment();
             //RemoveCar();
             // RemoveCustomer();
-            ReturnCar();
-           Console.ReadLine();
+            // ReturnCar();
+            CalculateTotalRevenue();
+            Console.ReadLine();
         }
 
+        private static void CalculateTotalRevenue()
+        {
+            try
+            {
+                ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+                decimal totalRevenue=carLeaseRepository.CalculateTotalRevenue();
+                Console.WriteLine($"Total Revenue: {totalRevenue}");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
 
+        private static void  RetrievePaymentHistory()
+        {
+            try
+            {
+                ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+                Console.WriteLine("Enter the Customer ID for which you want to retreive payment history: ");
+                int custid = int.Parse(Console.ReadLine());
+                FindCustomerById(custid);
+                List<Payment> payment = carLeaseRepository.RetrievePaymentHistory(custid);
+                foreach (Payment payments in payment)
+                {
+                    Console.WriteLine($"\nCustomerID : {custid}\nPaymentID : {payments.PaymentID}\nLeaseID : {payments.LeaseID}\nPaymentDate : {payments.PaymentDate}\nAmount: {payments.Amount}");
+                    Console.WriteLine();
+                }
+            }
+            catch (CustomerNotFoundException c)
+            {
+                //error Already shown in findcarbyid method
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Error: " + e.Message);
+            }
+        }
+
+        private static void LeaseCalculator()
+        {
+            try
+            {
+                ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl(); 
+                Console.WriteLine("Enter the lease id for which you want to calculate total cost: \n");
+                int leaseid = int.Parse(Console.ReadLine());
+                FindLeaseById(leaseid);
+                carLeaseRepository.LeaseCalculator(leaseid);
+
+            }
+            catch(LeaseNotFoundException l)
+            {
+                Console.WriteLine(l.Message);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private static void FindLeaseById(int leaseid)
+        {
+            ICarLeaseRepository CarLeaseRepository = new ICarLeaseRepositoryImpl();
+            try
+            {
+                Lease foundLease = CarLeaseRepository.FindLeaseById(leaseid);
+
+                // Use the foundCar object as needed
+                Console.WriteLine("Lease Founded:");
+                Console.WriteLine($"\tLease ID: {foundLease.LeaseID}");
+                Console.WriteLine($"\tCustomer ID: {foundLease.CustomerID}");
+                Console.WriteLine($"\tVehicle ID: {foundLease.VehicleID}");
+                Console.WriteLine($"\tStart Date: {foundLease.StartDate.ToString("yyyy-MM-dd")}");
+                Console.WriteLine($"\tEnd Date: {(foundLease.EndDate.ToString("yyyy-MM-dd"))}");
+                Console.WriteLine();
+
+            }
+            catch (LeaseNotFoundException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
         private static void AddCar()
         {
             try
@@ -163,21 +253,21 @@ namespace CarRentalSystem
 
         }
 
-        public static void FindCustomerById()
+        public static void FindCustomerById(int CustomerIDToFind)
         {
             ICarLeaseRepository CarLeaseRepository = new ICarLeaseRepositoryImpl();
             try
             {
-                int CustomerIDToFind = 101; // Replace with the actual car ID
                 Customer foundCustomer = CarLeaseRepository.FindCustomerById(CustomerIDToFind);
 
                 // Use the foundCar object as needed
                 Console.WriteLine("Customer Founded:");
-                Console.WriteLine($"Customer Id: {CustomerIDToFind}\t First Name: {foundCustomer.FirstName}\t Last Name: {foundCustomer.LastName}\t Email: {foundCustomer.Email}\t Phone Number: {foundCustomer.PhoneNumber}");
+                Console.WriteLine($"Customer Id: {CustomerIDToFind}\nFirst Name: {foundCustomer.FirstName}\nLast Name: {foundCustomer.LastName}\nEmail: {foundCustomer.Email}\nPhone Number: {foundCustomer.PhoneNumber}");
             }
             catch (CustomerNotFoundException ex)
             {
                 Console.WriteLine("Sorry!, {0}", ex.Message);
+                throw;
             }
             catch (Exception ex)
             {
@@ -185,7 +275,45 @@ namespace CarRentalSystem
                 Console.WriteLine("Error:  {0}", ex.Message);
             }
         }
+        private static void UpdateCustomerInformation()
+        {
+            ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+            try
+            {
+                ListCustomers();
+                Console.WriteLine("Now Enter the Details of customerId which you want to Update: ");
+                Console.WriteLine("\nEnter the Customer id:");
+                int custid = int.Parse(Console.ReadLine());
+                FindCustomerById(custid);
+                Console.WriteLine("\nNow please Enter the other details:");
+                Console.WriteLine("\nEnter the FirstName");
+                string First_Name = Console.ReadLine();
+                Console.WriteLine("\nEnter the LastName");
+                string Last_Name = Console.ReadLine();
+                Console.WriteLine("\nEnter the Email");
+                string Email_ = Console.ReadLine();
+                Console.WriteLine("\nEnter the Phone Number");
+                string Phone_Number = Console.ReadLine();
+                Customer newCustomer = new Customer
+                {
+                    CustomerID = custid,
+                    FirstName = First_Name,
+                    LastName = Last_Name,
+                    Email = Email_,
+                    PhoneNumber = Phone_Number
+                };
 
+                carLeaseRepository.UpdateCustomerInformation(newCustomer);
+                Console.WriteLine("");
+                ListCustomers();
+
+            }
+            catch (CustomerNotFoundException e)
+            {
+                
+            }
+
+        }
         private static void CheckActiveLeases()
         {
             ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
@@ -276,6 +404,7 @@ namespace CarRentalSystem
             }
         }
 
+
         private static void ListLeaseHistory()
         {
             ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
@@ -302,6 +431,7 @@ namespace CarRentalSystem
             }
         }
 
+        
         private static void ListRentedCars()
         {
             try

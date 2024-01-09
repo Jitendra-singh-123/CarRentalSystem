@@ -1,11 +1,8 @@
 ﻿using CarRentalSystem.Entity;
+using CarRentalSystem.Util;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data.SqlClient;
-using CarRentalSystem.Util;
 
 namespace CarRentalSystem.DAO
 {
@@ -258,7 +255,78 @@ namespace CarRentalSystem.DAO
                 throw; // Rethrow to allow handling in calling code
             }
         }
+        public void UpdateCustomerInformation(Customer customer)
+        {
+            try
+            {
+                conn = UtilClass.GetConnection();
+                conn.Open();
 
+                // SQL query to delete the customer by ID
+                string query = $@"UPDATE Customer 
+                          SET FirstName = '{customer.FirstName}', 
+                              LastName = '{customer.LastName}', 
+                              Email = '{customer.Email}', 
+                              PhoneNumber = '{customer.PhoneNumber}' 
+                          WHERE CustomerID = {customer.CustomerID}";
+                SqlCommand cmd = new SqlCommand(query, conn);
+
+                // Execute the query
+                int rowsAffected = cmd.ExecuteNonQuery();
+                if (rowsAffected > 0)
+                {
+                    Console.WriteLine("Customer Update Succesfully.");
+                }
+                else
+                {
+                    throw new CustomerNotFoundException();
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw; // Rethrow to allow handling in calling code
+            }
+            finally
+            {
+                conn.Close(); // Close connection
+            }
+        }
+
+        public Lease FindLeaseById(int leaseid)
+        {
+            try
+            {
+                conn = UtilClass.GetConnection();
+                conn.Open();
+                string query = $@"SELECT * FROM Lease WHERE LeaseID = {leaseid}";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                SqlDataReader dr = cmd.ExecuteReader();
+
+                if (dr.Read())
+                {
+
+                    return new Lease
+                    {
+                        LeaseID = dr.GetInt32(0),
+                        VehicleID = dr.GetInt32(1),
+                        CustomerID = dr.GetInt32(2),
+                        StartDate = dr.GetDateTime(3),
+                        EndDate = dr.GetDateTime(4),
+                        Type = dr.GetString(5)
+                    };
+                }
+                else
+                {
+                    throw new LeaseNotFoundException();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions, log errors, etc.
+                throw; // Rethrow to allow handling in calling code
+            }
+        }
         public List<Lease> ListActiveLeases()
         {
             List<Lease> activeLeases = new List<Lease>();
@@ -302,6 +370,127 @@ namespace CarRentalSystem.DAO
             {
                 conn.Close(); // Ensure to close connection in the end
             }
+        }
+
+       public void  LeaseCalculator(int leaseID)
+        {
+            try
+            {
+                conn = UtilClass.GetConnection();
+                conn.Open();
+                string query = $@"SELECT LeaseId, Type, StartDate, EndDate FROM Lease  WHERE LeaseID = {leaseID}";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    int leaseId = reader.GetInt32(0);
+                    string type = reader.GetString(1);
+                    DateTime startDate = reader.GetDateTime(2);
+                    DateTime endDate = reader.GetDateTime(3);
+
+                    double totalCost = CalculateLeaseCost(type, startDate, endDate);
+                    Console.WriteLine($"Total Cost of Lease ID: {leaseId}, Type: {type}, Total Cost: {totalCost}");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+
+        //Concrete Method
+        private double CalculateLeaseCost(string type, DateTime startDate, DateTime endDate)
+        {
+            double dailyRate = 50.00;  // Adjust as needed
+            double monthlyRate = 1200.00;  // Adjust as needed
+
+            if (type == "Daily")
+            {
+                TimeSpan duration = endDate - startDate;
+                int days = (int)duration.TotalDays;
+                return dailyRate * days;
+            }
+            else if (type == "Monthly")
+            {
+                int months = endDate.Month - startDate.Month + 1;
+                return monthlyRate * months;
+            }
+            else
+            {
+                throw new ArgumentException("Invalid lease type");
+            }
+        }
+
+        public List<Payment> RetrievePaymentHistory(int custid)
+        {
+            List<Payment> p = new List<Payment>();
+            try
+            {
+                conn = UtilClass.GetConnection();
+                conn.Open();
+                string query = $@"SELECT p.PaymentID,p.PaymentDate, p.Amount, l.LeaseId, c.FirstName, c.LastName
+                            FROM Payment p
+                            INNER JOIN Lease l ON p.LeaseId = l.LeaseId
+                            INNER JOIN Customer c ON l.CustomerId = c.CustomerID
+                            WHERE l.CustomerId = {custid}";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                SqlDataReader reader = cmd.ExecuteReader();
+                if(reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        Payment payment = new Payment
+                        {
+                            PaymentID = reader.GetInt32(0),
+                            LeaseID = reader.GetInt32(3),
+                            PaymentDate = reader.GetDateTime(1),
+                            Amount = Convert.ToDouble(reader.GetDecimal(2))
+                        };
+                        p.Add(payment);
+                    }
+                    return p;
+                }
+                else
+                {
+                    throw new CustomerNotFoundException();
+                    
+                }
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+            finally
+            {
+                conn.Close();
+            }
+           
+        }
+        public decimal CalculateTotalRevenue()
+        {
+            decimal totalRevenue = 0;
+            try
+            {
+                conn = UtilClass.GetConnection();
+                conn.Open();
+                string query = @"SELECT SUM(Amount) FROM Payment";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                object result = cmd.ExecuteScalar();
+                if (result != DBNull.Value)
+                {
+                    totalRevenue = (decimal)result;
+                }
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+            finally{
+                conn.Close();
+            }
+            return totalRevenue;
+           
         }
 
         public List<Vehicle> ListAvailableCars()

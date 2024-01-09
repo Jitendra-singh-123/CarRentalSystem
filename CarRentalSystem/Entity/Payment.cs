@@ -13,7 +13,7 @@ namespace CarRentalSystem.Entity
         public DateTime PaymentDate { get; set; }
         public double Amount { get; set; }
 
-
+        public Payment() { }
         public Payment(int paymentID, int leaseID, DateTime paymentDate, double amount)
         {
             PaymentID = paymentID;

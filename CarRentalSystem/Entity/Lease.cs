@@ -26,5 +26,9 @@ namespace CarRentalSystem.Entity
             EndDate = endDate;
             Type = type;
         }
+
+
+
     }
+
 }

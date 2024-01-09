@@ -21,7 +21,11 @@ namespace CarRentalSystem.DAO
         void RemoveCustomer(int customerID);
         List<Customer> ListCustomers();
         Customer FindCustomerById(int customerID);
-
+        decimal CalculateTotalRevenue();
+        void UpdateCustomerInformation(Customer c);
+        void LeaseCalculator(int leaseID);
+        List<Payment> RetrievePaymentHistory(int custid);
+        Lease FindLeaseById(int leaseID);
         // Lease Management
         Lease CreateLease(int customerID, int carID, DateTime startDate, DateTime endDate);
         void ReturnCar(int leaseID);
