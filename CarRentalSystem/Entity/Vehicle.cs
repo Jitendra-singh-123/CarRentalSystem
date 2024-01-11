@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CarRentalSystem.Entity
 {
-    class Vehicle
+   public class Vehicle
     {
         public int VehicleID { get; set; }
         public string Make { get; set; }
@@ -31,5 +31,7 @@ namespace CarRentalSystem.Entity
             PassengerCapacity = passengerCapacity;
             EngineCapacity = engineCapacity;
         }
+
+
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CarRentalSystem.Entity
 {
-    class Payment
+    public class Payment
     {
         public int PaymentID { get; set; }
         public int LeaseID { get; set; }

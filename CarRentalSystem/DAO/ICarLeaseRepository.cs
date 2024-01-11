@@ -7,7 +7,7 @@ using CarRentalSystem.Entity;
 
 namespace CarRentalSystem.DAO
 {
-    interface ICarLeaseRepository
+    public interface ICarLeaseRepository
     {
         void AddCar(Vehicle car);
         void RemoveCar(int carID);
@@ -22,7 +22,7 @@ namespace CarRentalSystem.DAO
         List<Customer> ListCustomers();
         Customer FindCustomerById(int customerID);
         decimal CalculateTotalRevenue();
-        void UpdateCustomerInformation(Customer c);
+        bool UpdateCustomerInformation(Customer c);
         void LeaseCalculator(int leaseID);
         List<Payment> RetrievePaymentHistory(int custid);
         Lease FindLeaseById(int leaseID);

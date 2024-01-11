@@ -17,7 +17,7 @@ namespace CarRentalSystem.Util
             string ConnectionString = ConfigurationManager.ConnectionStrings["myconnection"].ConnectionString;
 
             // 2. Establish connection
-             connection = new SqlConnection(ConnectionString);
+            connection = new SqlConnection(ConnectionString);
             // connection.ConnectionString = @"DataSource=(localdb)\MSSQLLocalDB;Initial Catalog=Hexaware_Dec_23;Integrated Security=True;";
             return connection;
         }

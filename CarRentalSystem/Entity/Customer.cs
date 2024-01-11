@@ -14,7 +14,7 @@ namespace CarRentalSystem.Entity
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
 
-        public Customer(){}
+        public Customer() { }
         public Customer(int customerID, string firstName, string lastName, string email, string phoneNumber)
         {
             CustomerID = customerID;

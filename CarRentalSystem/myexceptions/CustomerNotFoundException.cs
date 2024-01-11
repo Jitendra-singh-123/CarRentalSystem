@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace CarRentalSystem.DAO
+namespace CarRentalSystem.myexceptions
 {
-    [Serializable]
-    internal class CustomerNotFoundException : Exception
+
+    public class CustomerNotFoundException : Exception
     {
         public override string Message
         {
