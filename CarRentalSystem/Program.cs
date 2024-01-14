@@ -52,6 +52,7 @@ namespace CarRentalSystem
 
                     Console.Write("\nEnter your choice: \n");
 
+
                     choice = int.Parse(Console.ReadLine());
 
                     switch (choice)
@@ -360,11 +361,12 @@ namespace CarRentalSystem
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
             try
             {
-
-                Console.WriteLine("Enter Customer Id:");
+                Console.WriteLine("Enter Available Customer Id:");
                 int customerId = int.Parse(Console.ReadLine());
-                Console.WriteLine("Enter Car Id:");
+                carLeaseRepository.FindCustomerById(customerId);
+                Console.WriteLine("Enter Available Car Id:");
                 int carId = int.Parse(Console.ReadLine());
+                carLeaseRepository.FindCarById(carId);
                 Console.WriteLine("Enter Start Date(YYYY - MM - DD) of Lease: ");
                 DateTime startDate = DateTime.Parse(Console.ReadLine());
                 Console.WriteLine("Enter End Date (YYYY-MM-DD) of Lease:");
@@ -385,6 +387,7 @@ namespace CarRentalSystem
                     Console.WriteLine();
                 }
             }
+
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
@@ -406,6 +409,7 @@ namespace CarRentalSystem
             catch (CarNotFoundException ex)
             {
                 Console.WriteLine("Sorry!, {0}", ex.Message);
+
             }
             catch (Exception ex)
             {
@@ -428,12 +432,12 @@ namespace CarRentalSystem
 
                 foreach (Vehicle vehicle in listVehicle)
                 {
-                                    Console.WriteLine($"Car Id: {vehicle.VehicleID}\nMake: {vehicle.Make}\nModel: {vehicle.Model}\nYear: {vehicle.Year}\nDaily Rate: {vehicle.DailyRate}\nStatus: {vehicle.Status}\nPassenger Capacity: {vehicle.PassengerCapacity}\nEngine Capacity: {vehicle.EngineCapacity}");
+                    Console.WriteLine($"Car Id: {vehicle.VehicleID}\nMake: {vehicle.Make}\nModel: {vehicle.Model}\nYear: {vehicle.Year}\nDaily Rate: {vehicle.DailyRate}\nStatus: {vehicle.Status}\nPassenger Capacity: {vehicle.PassengerCapacity}\nEngine Capacity: {vehicle.EngineCapacity}");
 
                     Console.WriteLine();
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
@@ -488,9 +492,9 @@ namespace CarRentalSystem
                     Email = Email_,
                     PhoneNumber = Phone_Number
                 };
-                
+
                 bool status = carLeaseRepository.UpdateCustomerInformation(newCustomer);
-                if(status == true)
+                if (status == true)
                 {
                     Console.WriteLine("--------------------------------------------------------------------------------------------------");
                     Console.WriteLine("                                    Customer Updated Succesffuly                                    ");
@@ -504,14 +508,14 @@ namespace CarRentalSystem
                     Console.WriteLine("                                   Customer not updated                                                 ");
                     Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
                 }
-                
+
 
             }
-            catch(CustomerNotFoundException c)
+            catch (CustomerNotFoundException c)
             {
                 Console.WriteLine("Sorry!," + c.Message);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine("Error : {0}", e.Message);
             }
@@ -599,7 +603,7 @@ namespace CarRentalSystem
             try
             {
                 List<Customer> listcustomers = carLeaseRepository.ListCustomers();
-                
+
                 foreach (Customer customer in listcustomers)
                 {
                     Console.WriteLine($"Customer Id: {customer.CustomerID}\n First Name: {customer.FirstName}\n Last Name: {customer.LastName}\n Email: {customer.Email}\n Phone Number: {customer.PhoneNumber}");
@@ -671,57 +675,25 @@ namespace CarRentalSystem
         public static void RecordPayment()
         {
             ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("--------------------------------------------------------------------------------------------------");
-            Console.WriteLine("                                       Enter Data for Recording Payment                      ");
-            Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
-            Console.WriteLine("1. Add new lease record in payment table");
-            Console.WriteLine("2. Add the existing lease record in payment table");
-
-            Console.WriteLine("Choose Option:");
-
             try
             {
-                int option = int.Parse(Console.ReadLine());
-                switch (option)
-                {
-                    case 1:
-                        Console.WriteLine("Now Enter the Data first for lease");
-                        Console.WriteLine("Enter Customer ID:");
-                        int customerId = int.Parse(Console.ReadLine());
-                        Console.WriteLine("Enter Car ID:");
-                        int carId = int.Parse(Console.ReadLine());
-                        Console.WriteLine("Enter Start Date:");
-                        DateTime startDate = DateTime.Parse(Console.ReadLine());
-                        Console.WriteLine("Enter End Date:");
-                        DateTime endDate = DateTime.Parse(Console.ReadLine());
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("--------------------------------------------------------------------------------------------------");
+                Console.WriteLine("                                       Enter Data for Recording Payment                      ");
+                Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
 
-                        Lease lease = carLeaseRepository.CreateLease(customerId, carId, startDate, endDate);
-                        Console.WriteLine($"LeaseID from Created Lease: {lease.LeaseID}\n");
-                        Console.WriteLine("----------------Now Enter Amount to insert data in Payment table-------------------\n");
-                        double paymentAmount = double.Parse(Console.ReadLine());
-                        carLeaseRepository.RecordPayment(lease, paymentAmount);
-                        break;
-
-                    case 2:
-                        Console.WriteLine("Please Enter the existing Lease id which you want to insert in payment record: ");
-                        int leaseid = int.Parse(Console.ReadLine());
-                        Lease lease1 = carLeaseRepository.FindLeaseById(leaseid);
-                        Console.WriteLine("----------------Now Enter Amount to insert data in Payment table-------------------\n");
-                        double paymentAmount1 = double.Parse(Console.ReadLine());
-                        carLeaseRepository.RecordPayment(lease1, paymentAmount1);
-                        break;
-                    default:
-                        Console.WriteLine("Invalid Option!, Please select the option from above.");
-                        break;
-                }
-
-
+                Console.WriteLine("Please Enter the existing Lease id which you want to insert in payment record: ");
+                int leaseid = int.Parse(Console.ReadLine());
+                Lease lease1 = carLeaseRepository.FindLeaseById(leaseid);
+                Console.WriteLine("----------------Now Enter Amount to insert data in Payment table-------------------\n");
+                double paymentAmount1 = double.Parse(Console.ReadLine());
+                carLeaseRepository.RecordPayment(lease1, paymentAmount1);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
-                Console.WriteLine("Error : {0}", e.Message);
+                Console.WriteLine(e.Message);
             }
+
         }
 
         public static void RemoveCar()
@@ -788,10 +760,6 @@ namespace CarRentalSystem
                     Console.WriteLine($"Engine Capacity: {car.EngineCapacity}");
                     Console.WriteLine();
                 }
-            }
-            catch(LeaseNotFoundException l)
-            {
-                Console.WriteLine(l.Message);
             }
             catch (Exception e)
             {

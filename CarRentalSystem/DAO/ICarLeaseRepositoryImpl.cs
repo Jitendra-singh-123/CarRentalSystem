@@ -27,7 +27,7 @@ namespace CarRentalSystem.DAO
                 cmd.Parameters.AddWithValue("@passengerCapacity", car.PassengerCapacity);
                 cmd.Parameters.AddWithValue("@engineCapacity", car.EngineCapacity);
                 car.VehicleID = Convert.ToInt32(cmd.ExecuteScalar());
-               
+
                 if (car.VehicleID > 0)
                 {
                     Console.WriteLine("----------------------------------Car added successfully------------------------------------");
@@ -138,7 +138,7 @@ namespace CarRentalSystem.DAO
                 cmd.Parameters.AddWithValue("@EndDate", endDate);
                 Lease generatedLeaseID = new Lease();
                 generatedLeaseID.LeaseID = Convert.ToInt32(cmd.ExecuteScalar());
-               
+
                 if (generatedLeaseID.LeaseID > 0)
                 {
                     Console.WriteLine("---------------------------------Lease created successfully--------------------------------------");
@@ -197,9 +197,9 @@ namespace CarRentalSystem.DAO
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception: {ex.Message}");
+                // Console.WriteLine($"Exception: {ex.Message}");
                 throw;
-                
+
             }
             finally
             {
@@ -277,7 +277,7 @@ namespace CarRentalSystem.DAO
             {
                 conn.Close(); // Close connection
             }
-        }//inc
+        }
 
         public Lease FindLeaseById(int leaseid)
         {
@@ -744,14 +744,34 @@ namespace CarRentalSystem.DAO
             {
                 conn = UtilClass.GetConnection();
                 conn.Open();
-                string query = $@"
+
+                // Check if the car is already returned
+                string checkQuery = $@"
+            SELECT Vehicle.Status
+            FROM Vehicle
+            INNER JOIN Lease ON Vehicle.VehicleID = Lease.VehicleID
+            WHERE Lease.LeaseID = {leaseID}";
+
+                SqlCommand checkCmd = new SqlCommand(checkQuery, conn);
+                object statusResult = checkCmd.ExecuteScalar();
+
+                if (statusResult != null && statusResult.ToString().ToLower() == "returned")
+                {
+                    Console.WriteLine("Car has already been returned.");
+                    return;
+                }
+
+                // Update the car status
+                string updateQuery = $@"
             UPDATE Vehicle
             SET Status = 'returned'
             FROM Vehicle
             INNER JOIN Lease ON Vehicle.VehicleID = Lease.VehicleID
             WHERE Lease.LeaseID = {leaseID}";
-                SqlCommand cmd = new SqlCommand(query, conn);
+
+                SqlCommand cmd = new SqlCommand(updateQuery, conn);
                 int rowsAffected = cmd.ExecuteNonQuery();
+
                 if (rowsAffected > 0)
                 {
                     Console.WriteLine("Car returned successfully.");
@@ -760,6 +780,10 @@ namespace CarRentalSystem.DAO
                 {
                     throw new LeaseNotFoundException();
                 }
+            }
+            catch (LeaseNotFoundException l)
+            {
+                throw;
             }
             catch (Exception ex)
             {
