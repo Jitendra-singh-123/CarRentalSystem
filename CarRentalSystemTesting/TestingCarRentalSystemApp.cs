@@ -13,7 +13,7 @@ namespace CarRentalSystemTesting
     {
         private ICarLeaseRepository carLeaseRepository;
         private  int leaseID;
-        public Lease l;
+        //public Lease l;
         [SetUp]
         public void Setup()
         {
@@ -59,14 +59,14 @@ namespace CarRentalSystemTesting
         public void CreateLease_ShouldCreateLeaseSuccessfully()
         {
             // Arrange
-            int customerID = 106;
-            int carID = 7;
+            int customerID = 109;
+            int carID = 9;
             DateTime startDate = DateTime.Now;
             DateTime endDate = startDate.AddDays(7);
             // Act
             Lease createdLease = carLeaseRepository.CreateLease(customerID, carID, startDate, endDate);
-            l = new Lease();
-            l.LeaseID =  createdLease.LeaseID;
+            //l = new Lease();
+            leaseID =  createdLease.LeaseID;
             // Assert
             Assert.IsNotNull(createdLease, "Lease should be created successfully");
             Assert.AreEqual(customerID, createdLease.CustomerID, "CustomerID should match");
@@ -90,7 +90,7 @@ namespace CarRentalSystemTesting
             
             // Example: Check if the LeaseID, VehicleID, and CustomerID of the first lease in the list are valid
             Lease lastLease = leaseHistory.Last();
-            Assert.AreEqual(lastLease.LeaseID, l.LeaseID);
+            Assert.AreEqual(lastLease.LeaseID, leaseID);
 
         }
 
