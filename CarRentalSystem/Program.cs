@@ -440,11 +440,11 @@ namespace CarRentalSystem
                 DateTime startDate = DateTime.Parse(Console.ReadLine());
                 Console.WriteLine("Enter End Date (YYYY-MM-DD) of Lease:");
                 DateTime endDate = DateTime.Parse(Console.ReadLine());
+
                 if (endDate <= startDate)
                 {
                     throw new Exception("End date should be greater than the start date.");
                 }
-
                 Lease newLease = carLeaseRepository.CreateLease(customerId, carId, startDate, endDate);
                 List<Lease> leaseList = carLeaseRepository.ListLeaseHistory();
                 Console.WriteLine("--------------------------------------------------------------------------------------------------");
@@ -757,16 +757,11 @@ namespace CarRentalSystem
             ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
             try
             {
-<<<<<<< Updated upstream
+
                 List<Customer> listcustomers = carLeaseRepository.ListCustomers();
 
                 foreach (Customer customer in listcustomers)
-=======
-                List<Customer> listCustomers = carLeaseRepository.ListCustomers();
-
-                foreach (Customer customer in listCustomers)
->>>>>>> Stashed changes
-                {
+                { 
                     Console.WriteLine($"Customer Id: {customer.CustomerID}\n First Name: {customer.FirstName}\n Last Name: {customer.LastName}\n Email: {customer.Email}\n Phone Number: {customer.PhoneNumber}");
                     Console.WriteLine();
                 }
@@ -853,24 +848,14 @@ namespace CarRentalSystem
         /// </summary>
         public static void RecordPayment()
         {
-<<<<<<< Updated upstream
-            ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
-<<<<<<< HEAD
-=======
+
             ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
->>>>>>> Stashed changes
+
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("--------------------------------------------------------------------------------------------------");
             Console.WriteLine("                                       Enter Data for Recording Payment                      ");
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
-<<<<<<< Updated upstream
-            Console.WriteLine("1. Add new lease record in payment table");
-            Console.WriteLine("2. Add the existing lease record in payment table");
 
-            Console.WriteLine("Choose Option:");
-
-=======
->>>>>>> eef7090414702856eb659d005d670478c484c083
             try
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
@@ -878,11 +863,6 @@ namespace CarRentalSystem
                 Console.WriteLine("                                       Enter Data for Recording Payment                      ");
                 Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
 
-<<<<<<< HEAD
-=======
-
-            try
-            {
                 
                 Console.WriteLine("Please Enter the existing Lease id which you want to insert in payment record: ");
                 int leaseId = int.Parse(Console.ReadLine());
@@ -890,15 +870,8 @@ namespace CarRentalSystem
                 Console.WriteLine("----------------Now Enter Amount to insert data in Payment table-------------------\n");
                 double paymentAmount1 = double.Parse(Console.ReadLine());
                 carLeaseRepository.RecordPayment(lease1, paymentAmount1);
->>>>>>> Stashed changes
-=======
-                Console.WriteLine("Please Enter the existing Lease id which you want to insert in payment record: ");
-                int leaseid = int.Parse(Console.ReadLine());
-                Lease lease1 = carLeaseRepository.FindLeaseById(leaseid);
-                Console.WriteLine("----------------Now Enter Amount to insert data in Payment table-------------------\n");
-                double paymentAmount1 = double.Parse(Console.ReadLine());
-                carLeaseRepository.RecordPayment(lease1, paymentAmount1);
->>>>>>> eef7090414702856eb659d005d670478c484c083
+
+
             }
             catch(Exception e)
             {
