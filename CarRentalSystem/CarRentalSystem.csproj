@@ -48,7 +48,7 @@
     <Compile Include="myexceptions\CarNotFoundException.cs" />
     <Compile Include="myexceptions\CustomerNotFoundException.cs" />
     <Compile Include="DAO\ICarLeaseRepository.cs" />
-    <Compile Include="DAO\ICarLeaseRepositoryImpl.cs" />
+    <Compile Include="DAO\CarLeaseRepositoryImpl.cs" />
     <Compile Include="Entity\Customer.cs" />
     <Compile Include="Entity\Lease.cs" />
     <Compile Include="Entity\Payment.cs" />

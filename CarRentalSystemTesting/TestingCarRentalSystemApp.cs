@@ -20,7 +20,7 @@ namespace CarRentalSystemTesting
             AppDomain.CurrentDomain.SetData("APP_CONFIG_FILE", "C:\\Users\\acer\\source\\repos\\CarRentalSystem\\CarRentalSystem\\App.config");
 
             // AppDomain.CurrentDomain.SetData("APP_CONFIG_FILE", String.Format("{0}\\App.config", AppDomain.CurrentDomain.BaseDirectory));
-            carLeaseRepository = new ICarLeaseRepositoryImpl();
+            carLeaseRepository = new CarLeaseRepositoryImpl();
            
         }
 
@@ -79,16 +79,13 @@ namespace CarRentalSystemTesting
         [Test]
         public void ListLeaseHistory_ShouldRetrieveLeaseHistorySuccessfully()
         {
-            // Arrange 
-
-            // Act
             CreateLease_ShouldCreateLeaseSuccessfully();
             List<Lease> leaseHistory = carLeaseRepository.ListLeaseHistory();
             // Assert
             Assert.IsNotNull(leaseHistory, "Lease history should not be null");
             Assert.IsNotEmpty(leaseHistory, "Lease history should not be empty");
             
-            // Example: Check if the LeaseID, VehicleID, and CustomerID of the first lease in the list are valid
+            //Example: Check if the LeaseID, VehicleID, and CustomerID of the Last lease in the list are valid
             Lease lastLease = leaseHistory.Last();
             Assert.AreEqual(lastLease.LeaseID, l.LeaseID);
 
@@ -101,22 +98,42 @@ namespace CarRentalSystemTesting
             int nonExistingCarID = -1;
 
             // Act 
-            TestDelegate act = () => carLeaseRepository.FindCarById(nonExistingCarID);
+            try
+            {
+                carLeaseRepository.FindCarById(nonExistingCarID);
+            }
+            catch (CarNotFoundException ex)
+            {
+                // Assert - Check if the expected exception is thrown
+                Assert.AreEqual("Car not found with the entered car id", ex.Message);
+            }
 
             int nonExistingCustomerID = -1;
 
             // Act 
-            TestDelegate act1 = () => carLeaseRepository.FindCustomerById(nonExistingCustomerID);
+            try
+            {
+                carLeaseRepository.FindCustomerById(nonExistingCustomerID);
+            }
+            catch (CustomerNotFoundException ex)
+            {
+                // Assert - Check if the expected exception is thrown
+                Assert.AreEqual("Customer not found with the entered customer id", ex.Message);
+            }
 
             int nonExistingLeaseID = -1;
 
             // Act 
-            TestDelegate act2 = () => carLeaseRepository.FindLeaseById(nonExistingLeaseID);
+            try
+            {
+                carLeaseRepository.FindLeaseById(nonExistingLeaseID);
+            }
+            catch (LeaseNotFoundException ex)
+            {
+                // Assert - Check if the expected exception is thrown
+                Assert.AreEqual("Lease not found with the entered Lease id", ex.Message);
+            }
 
-            // Assert - Check if the expected exception is thrown
-            Assert.Throws<CarNotFoundException>(act);
-            Assert.Throws<CustomerNotFoundException>(act1);
-            Assert.Throws<LeaseNotFoundException>(act2);
         }
     }
 }

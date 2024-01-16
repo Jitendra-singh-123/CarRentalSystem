@@ -54,6 +54,7 @@ namespace CarRentalSystem
 
                     choice = int.Parse(Console.ReadLine());
 
+
                     switch (choice)
                     {
 
@@ -67,28 +68,14 @@ namespace CarRentalSystem
                             CreateLease();
                             break;
                         case 4:
-                            Console.ForegroundColor = ConsoleColor.Yellow;
-                            Console.WriteLine("--------------------------------------------------------------------------------------------------");
-                            Console.WriteLine("                                   Enter Car Id to find                                          ");
-                            Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
-                            int carid = int.Parse(Console.ReadLine());
-                            FindCarById(carid);
+                           
+                            FindCarById();
                             break;
                         case 5:
-                            Console.ForegroundColor = ConsoleColor.Yellow;
-                            Console.WriteLine("--------------------------------------------------------------------------------------------------");
-                            Console.WriteLine("                                   Enter Lease Id to find                                          ");
-                            Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
-                            int leaseid = int.Parse(Console.ReadLine());
-                            FindLeaseById(leaseid);
+                            FindLeaseById();
                             break;
                         case 6:
-                            Console.ForegroundColor = ConsoleColor.Yellow;
-                            Console.WriteLine("--------------------------------------------------------------------------------------------------");
-                            Console.WriteLine("                                   Enter Customer Id to find                                          ");
-                            Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
-                            int custid = int.Parse(Console.ReadLine());
-                            FindCustomerById(custid);
+                            FindCustomerById();
                             break;
                         case 7:
                             CheckActiveLeases();
@@ -148,9 +135,20 @@ namespace CarRentalSystem
             }
             Console.ReadLine();
         }
+
+
+        /// <summary>
+        /// Calculates and displays the total revenue generated from all payments in the car leasing system.
+        /// </summary>
+        /// <remarks>
+        /// This method utilizes an instance of the 'ICarLeaseRepository' interface to access the 'CalculateTotalRevenue' method
+        /// from the 'CarLeaseRepositoryImpl' class, which interacts with the data source to calculate the total revenue.
+        /// The total revenue is then displayed in the console. In case of any exceptions during the process, the error message
+        /// is caught and printed to the console.
+        /// </remarks>
         public static void CalculateTotalRevenue()
         {
-            ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("--------------------------------------------------------------------------------------------------");
             Console.WriteLine("                                         Total Revenue                                           ");
@@ -166,27 +164,39 @@ namespace CarRentalSystem
             }
         }
 
+
+        /// <summary>
+        /// Retrieves and displays the payment history for a specific customer based on the entered Customer ID.
+        /// </summary>
+        /// <remarks>
+        /// This method uses an instance of the 'ICarLeaseRepository' interface and the 'CarLeaseRepositoryImpl' class
+        /// to interact with the data source. It prompts the user to enter a Customer ID and then retrieves the payment
+        /// history for that customer. The retrieved payment details, including Payment ID, Lease ID, Payment Date, and Amount,
+        /// are displayed in the console. If the customer is not found or any other exceptions occur during the process,
+        /// appropriate error messages are displayed.
+        /// </remarks>
         public static void RetrievePaymentHistory()
         {
-            ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("--------------------------------------------------------------------------------------------------");
             Console.WriteLine("           Enter the Customer ID for which you want to retreive payment history:                  ");
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
             try
             {
-                int custid = int.Parse(Console.ReadLine());
-                FindCustomerById(custid);
-                List<Payment> payment = carLeaseRepository.RetrievePaymentHistory(custid);
+                int custId = int.Parse(Console.ReadLine());
+                carLeaseRepository.FindCustomerById(custId);
+                List<Payment> payment = carLeaseRepository.RetrievePaymentHistory(custId);
                 foreach (Payment payments in payment)
                 {
-                    Console.WriteLine($"\nCustomerID : {custid}\nPaymentID : {payments.PaymentID}\nLeaseID : {payments.LeaseID}\nPaymentDate : {payments.PaymentDate}\nAmount: {payments.Amount}");
+                    Console.WriteLine($"\nCustomerID : {custId}\nPaymentID : {payments.PaymentID}\nLeaseID : {payments.LeaseID}\nPaymentDate : {payments.PaymentDate}\nAmount: {payments.Amount}");
                     Console.WriteLine();
                 }
             }
             catch (CustomerNotFoundException c)
             {
                 //error Already shown in findcarbyid method
+                Console.WriteLine(c.Message);
             }
             catch (Exception e)
             {
@@ -194,18 +204,27 @@ namespace CarRentalSystem
             }
         }
 
+        /// <summary>
+        /// Calculates and displays the total cost of a lease based on the entered Lease ID.
+        /// </summary>
+        /// <remarks>
+        /// This method uses an instance of the 'ICarLeaseRepository' interface and the 'CarLeaseRepositoryImpl' class
+        /// to interact with the data source. It prompts the user to enter a Lease ID and then calculates and displays
+        /// the total cost of the lease, considering the lease type, start date, and end date. If the lease is not found
+        /// or any other exceptions occur during the process, appropriate error messages are displayed.
+        /// </remarks>
         public static void LeaseCalculator()
         {
-            ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("--------------------------------------------------------------------------------------------------");
             Console.WriteLine("                               Enter Lease Id for which you want to find total cost               ");
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
             try
             {
-                int leaseid = int.Parse(Console.ReadLine());
-                FindLeaseById(leaseid);
-                carLeaseRepository.LeaseCalculator(leaseid);
+                int leaseId = int.Parse(Console.ReadLine());
+                carLeaseRepository.FindLeaseById(leaseId);
+                carLeaseRepository.LeaseCalculator(leaseId);
             }
             catch (LeaseNotFoundException l)
             {
@@ -217,11 +236,26 @@ namespace CarRentalSystem
             }
         }
 
-        public static void FindLeaseById(int leaseid)
+        /// <summary>
+        /// Finds and displays details of a lease based on the entered Lease ID.
+        /// </summary>
+        /// <remarks>
+        /// This method uses an instance of the 'ICarLeaseRepository' interface and the 'CarLeaseRepositoryImpl' class
+        /// to interact with the data source. It prompts the user to enter a Lease ID and then finds and displays the
+        /// details of the lease, including Lease ID, Customer ID, Vehicle ID, Start Date, and End Date. If the lease is
+        /// not found or any other exceptions occur during the process, appropriate error messages are displayed.
+        /// </remarks>
+        public static void FindLeaseById()
         {
+            ICarLeaseRepository CarLeaseRepository = new CarLeaseRepositoryImpl();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("--------------------------------------------------------------------------------------------------");
+            Console.WriteLine("                                   Enter Lease Id to find                                          ");
+            Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
+           
             try
             {
-                ICarLeaseRepository CarLeaseRepository = new ICarLeaseRepositoryImpl();
+                int leaseid = int.Parse(Console.ReadLine());
                 Lease foundLease = CarLeaseRepository.FindLeaseById(leaseid);
                 Console.WriteLine();
                 Console.WriteLine("--------------------------------------------------------------------------------------------------");
@@ -246,6 +280,17 @@ namespace CarRentalSystem
             }
 
         }
+
+        /// <summary>
+        /// Adds a new car to the system based on user input and displays the list of cars after insertion.
+        /// </summary>
+        /// <remarks>
+        /// This method prompts the user to enter details of a new car, including Make, Model, Year, Daily Rate,
+        /// Status, Passenger Capacity, and Engine Capacity. It then creates a new 'Vehicle' object with the entered
+        /// details and adds it to the data source using an instance of the 'ICarLeaseRepository' interface and the
+        /// 'CarLeaseRepositoryImpl' class. After insertion, it fetches and displays the list of all cars in the system.
+        /// If any errors occur during the process, appropriate error messages are displayed.
+        /// </remarks>
         public static void AddCar()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -254,7 +299,7 @@ namespace CarRentalSystem
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
             try
             {
-                ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+                ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
                 Console.WriteLine("Enter Make of Car:");
                 string make = Console.ReadLine();
                 Console.WriteLine("Enter Model of Car:");
@@ -308,15 +353,28 @@ namespace CarRentalSystem
 
         }
 
+
+        /// <summary>
+        /// Adds a new customer to the system based on user input and displays the list of customers after insertion.
+        /// </summary>
+        /// <remarks>
+        /// This method prompts the user to enter details of a new customer, including First Name, Last Name, Email,
+        /// and Phone Number. It then creates a new 'Customer' object with the entered details and adds it to the data 
+        /// source using an instance of the 'ICarLeaseRepository' interface and the 'CarLeaseRepositoryImpl' class. 
+        /// After insertion, it fetches and displays the list of all customers in the system. If any errors occur during 
+        /// the process, appropriate error messages are displayed.
+        /// </remarks>
         public static void AddCustomer()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("--------------------------------------------------------------------------------------------------");
+            Console.WriteLine("                                   Enter Details of Customer                                      ");
+            Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
             try
             {
-                ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
-                Console.WriteLine("--------------------------------------------------------------------------------------------------");
-                Console.WriteLine("                                   Enter Details of Customer                                      ");
-                Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
+     
+               
                 Console.WriteLine("Enter First Name: ");
                 string firstName = Console.ReadLine();
                 Console.WriteLine("Enter Last Name: ");
@@ -351,10 +409,21 @@ namespace CarRentalSystem
                 Console.WriteLine($"Error: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Creates a new lease based on user input, validates customer and car availability, and displays the list of leases after insertion.
+        /// </summary>
+        /// <remarks>
+        /// This method prompts the user to enter details of a new lease, including Customer ID, Car ID, Start Date, and End Date.
+        /// It then checks the availability of the specified customer and car using the 'FindCustomerById' and 'FindCarById' methods.
+        /// If both customer and car are available, it creates a new 'Lease' object using the 'ICarLeaseRepository' interface and 
+        /// the 'CarLeaseRepositoryImpl' class. After lease creation, it fetches and displays the list of all leases in the system.
+        /// If any errors occur during the process, appropriate error messages are displayed.
+        /// </remarks>
         public static void CreateLease()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
             Console.WriteLine("--------------------------------------------------------------------------------------------------");
             Console.WriteLine("                                     Enter Details of Lease                                         ");
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
@@ -391,17 +460,33 @@ namespace CarRentalSystem
             }
         }
 
-        public static void FindCarById(int CarIDToFind)
+        /// <summary>
+        /// Finds and displays details of a vehicle based on user input of the Vehicle ID.
+        /// </summary>
+        /// <remarks>
+        /// This method prompts the user to enter a Vehicle ID and uses the 'ICarLeaseRepository' interface and 
+        /// the 'CarLeaseRepositoryImpl' class to find the corresponding vehicle using the 'FindCarById' method.
+        /// If the vehicle is found, it displays its details, including Make, Model, Year, Daily Rate, Status,
+        /// Passenger Capacity, and Engine Capacity. If the specified vehicle is not found, a 'CarNotFoundException'
+        /// is caught and an appropriate error message is displayed. Other exceptions are also caught and handled
+        /// with corresponding error messages.
+        /// </remarks>
+        public static void FindCarById()
         {
-            ICarLeaseRepository CarLeaseRepository = new ICarLeaseRepositoryImpl();
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("--------------------------------------------------------------------------------------------------");
+            Console.WriteLine("                                   Enter Car Id to find                                          ");
+            Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
+            
             try
             {
-                int carIDToFind = CarIDToFind;
-                Vehicle foundCar = CarLeaseRepository.FindCarById(carIDToFind);
+                int carId = int.Parse(Console.ReadLine());
+                Vehicle foundCar = carLeaseRepository.FindCarById(carId);
                 Console.WriteLine("--------------------------------------------------------------------------------------------------");
                 Console.WriteLine("                                            Car Found                                                   ");
                 Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
-                Console.WriteLine($"Car Id: {carIDToFind}\nMake: {foundCar.Make}\nModel: {foundCar.Model}\nYear: {foundCar.Year}\nDaily Rate: {foundCar.DailyRate}\nStatus: {foundCar.Status}\nPassenger Capacity: {foundCar.PassengerCapacity}\nEngine Capacity: {foundCar.EngineCapacity}");
+                Console.WriteLine($"Car Id: {carId}\nMake: {foundCar.Make}\nModel: {foundCar.Model}\nYear: {foundCar.Year}\nDaily Rate: {foundCar.DailyRate}\nStatus: {foundCar.Status}\nPassenger Capacity: {foundCar.PassengerCapacity}\nEngine Capacity: {foundCar.EngineCapacity}");
             }
             catch (CarNotFoundException ex)
             {
@@ -415,13 +500,23 @@ namespace CarRentalSystem
 
         }
 
+        /// <summary>
+        /// Displays a list of all vehicles, including details such as Vehicle ID, Make, Model, Year,
+        /// Daily Rate, Status, Passenger Capacity, and Engine Capacity.
+        /// </summary>
+        /// <remarks>
+        /// This method uses the 'ICarLeaseRepository' interface and 'CarLeaseRepositoryImpl' class to retrieve
+        /// the list of all vehicles using the 'ListAllCars' method. It then iterates through the list and
+        /// displays the details of each vehicle. If an exception occurs during the process, it is caught,
+        /// and an error message is displayed.
+        /// </remarks>
         public static void ListAllCars()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("--------------------------------------------------------------------------------------------------");
             Console.WriteLine("                                       List of Customers                                        ");
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
-            ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
             try
             {
                 List<Vehicle> listVehicle = carLeaseRepository.ListAllCars();
@@ -439,17 +534,33 @@ namespace CarRentalSystem
             }
 
         }
-        public static void FindCustomerById(int CustomerIDToFind)
+
+        /// <summary>
+        /// Finds and displays details of a customer based on the provided customer ID.
+        /// </summary>
+        /// <remarks>
+        /// This method uses the 'ICarLeaseRepository' interface and 'CarLeaseRepositoryImpl' class to retrieve
+        /// customer details using the 'FindCustomerById' method. It prompts the user to enter a customer ID,
+        /// attempts to find the customer, and displays the customer's information if found. If the customer is
+        /// not found, a 'CustomerNotFoundException' is caught and an appropriate error message is displayed.
+        /// Any other exceptions are caught and displayed as error messages.
+        /// </remarks>
+        public static void FindCustomerById()
         {
-            ICarLeaseRepository CarLeaseRepository = new ICarLeaseRepositoryImpl();
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("--------------------------------------------------------------------------------------------------");
+            Console.WriteLine("                                   Enter Customer Id to find                                          ");
+            Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
+            int custId = int.Parse(Console.ReadLine());
             try
             {
-                Customer foundCustomer = CarLeaseRepository.FindCustomerById(CustomerIDToFind);
+                Customer foundCustomer = carLeaseRepository.FindCustomerById(custId);
                 Console.WriteLine();
                 Console.WriteLine("--------------------------------------------------------------------------------------------------");
                 Console.WriteLine("                                   Customer Found                                                 ");
                 Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
-                Console.WriteLine($"\nCustomer Id: {CustomerIDToFind}\nFirst Name: {foundCustomer.FirstName}\nLast Name: {foundCustomer.LastName}\nEmail: {foundCustomer.Email}\nPhone Number: {foundCustomer.PhoneNumber}");
+                Console.WriteLine($"\nCustomer Id: {custId}\nFirst Name: {foundCustomer.FirstName}\nLast Name: {foundCustomer.LastName}\nEmail: {foundCustomer.Email}\nPhone Number: {foundCustomer.PhoneNumber}");
             }
             catch (CustomerNotFoundException ex)
             {
@@ -460,33 +571,47 @@ namespace CarRentalSystem
                 Console.WriteLine("Error:  {0}", ex.Message);
             }
         }
+
+        /// <summary>
+        /// Updates the information of a customer based on the provided customer ID.
+        /// </summary>
+        /// <remarks>
+        /// This method uses the 'ICarLeaseRepository' interface and 'CarLeaseRepositoryImpl' class to retrieve
+        /// customer details using the 'FindCustomerById' method. It then prompts the user to enter updated
+        /// information for the customer, including first name, last name, email, and phone number. It creates
+        /// a new 'Customer' object with the updated information and calls the 'UpdateCustomerInformation' method
+        /// of the repository to perform the update. If the update is successful, it displays a success message,
+        /// updates the customer list, and shows the updated list. If the customer is not found, a
+        /// 'CustomerNotFoundException' is caught, and an appropriate error message is displayed. Any other
+        /// exceptions are caught and displayed as error messages.
+        /// </remarks>
         public static void UpdateCustomerInformation()
         {
 
-            ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
             try
             {
                 ListCustomers();
                 Console.WriteLine("Now Enter the Details of customerId which you want to Update: ");
                 Console.WriteLine("\nEnter the Customer id:");
-                int custid = int.Parse(Console.ReadLine());
-                carLeaseRepository.FindCustomerById(custid);
+                int custId = int.Parse(Console.ReadLine());
+                carLeaseRepository.FindCustomerById(custId);
                 Console.WriteLine("\nNow please Enter the other details:");
                 Console.WriteLine("\nEnter the FirstName");
-                string First_Name = Console.ReadLine();
+                string firstName = Console.ReadLine();
                 Console.WriteLine("\nEnter the LastName");
-                string Last_Name = Console.ReadLine();
+                string lastName = Console.ReadLine();
                 Console.WriteLine("\nEnter the Email");
-                string Email_ = Console.ReadLine();
+                string email = Console.ReadLine();
                 Console.WriteLine("\nEnter the Phone Number");
-                string Phone_Number = Console.ReadLine();
+                string phoneNumber = Console.ReadLine();
                 Customer newCustomer = new Customer
                 {
-                    CustomerID = custid,
-                    FirstName = First_Name,
-                    LastName = Last_Name,
-                    Email = Email_,
-                    PhoneNumber = Phone_Number
+                    CustomerID = custId,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    Email = email,
+                    PhoneNumber = phoneNumber
                 };
                 
                 bool status = carLeaseRepository.UpdateCustomerInformation(newCustomer);
@@ -517,17 +642,27 @@ namespace CarRentalSystem
             }
 
         }
+
+
+        /// <summary>
+        /// Displays a list of active leases, showing lease details such as ID, customer ID, vehicle ID, start date,
+        /// and end date (or "Ongoing" for ongoing leases). It uses the 'ICarLeaseRepository' interface and
+        /// 'CarLeaseRepositoryImpl' class to retrieve the list of active leases using the 'ListActiveLeases' method.
+        /// The active leases are then displayed to the console. If no active leases are found, an appropriate message
+        /// is displayed. Any exceptions encountered during the process are caught and displayed as error messages.
+        /// </summary>
         public static void CheckActiveLeases()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
+            Console.WriteLine();
+            Console.WriteLine("--------------------------------------------------------------------------------------------------");
+            Console.WriteLine("                                        Active Leases List                                          ");
+            Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
             try
             {
                 List<Lease> ActiveLeaseList = carLeaseRepository.ListActiveLeases();
-                Console.WriteLine();
-                Console.WriteLine("--------------------------------------------------------------------------------------------------");
-                Console.WriteLine("                                        Active Leases List                                          ");
-                Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
+                
                 if (ActiveLeaseList.Count > 0)
                 {
                     foreach (Lease lease in ActiveLeaseList)
@@ -552,16 +687,26 @@ namespace CarRentalSystem
             }
         }
 
+
+
+        /// <summary>
+        /// Displays a list of available cars, showing details such as vehicle ID, make, model, year, daily rate, status,
+        /// passenger capacity, and engine capacity. It uses the 'ICarLeaseRepository' interface and 'CarLeaseRepositoryImpl' 
+        /// class to retrieve the list of available cars using the 'ListAvailableCars' method. The available cars are then 
+        /// displayed to the console. If no cars are available, an appropriate message is displayed. Any exceptions encountered 
+        /// during the process are caught and displayed as error messages.
+        /// </summary>
         public static void ListAvailableCars()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
+            Console.WriteLine("--------------------------------------------------------------------------------------------------");
+            Console.WriteLine("                                       List of Available Cars:                                         ");
+            Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
             try
             {
                 List<Vehicle> listAvailableCars = carLeaseRepository.ListAvailableCars();
-                Console.WriteLine("--------------------------------------------------------------------------------------------------");
-                Console.WriteLine("                                       List of Available Cars:                                         ");
-                Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
+                
                 if (listAvailableCars.Count > 0)
                 {
                     foreach (Vehicle vehicle in listAvailableCars)
@@ -589,18 +734,30 @@ namespace CarRentalSystem
             }
         }
 
+        /// <summary>
+        /// Displays a list of customers, showing details such as customer ID, first name, last name, email, and phone number.
+        /// It uses the 'ICarLeaseRepository' interface and 'CarLeaseRepositoryImpl' class to retrieve the list of customers
+        /// using the 'ListCustomers' method. The customer details are then displayed to the console. Any exceptions encountered
+        /// during the process are caught and displayed as error messages.
+        /// </summary>
         public static void ListCustomers()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("--------------------------------------------------------------------------------------------------");
             Console.WriteLine("                                       List of Customers                                        ");
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
-            ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
             try
             {
+<<<<<<< Updated upstream
                 List<Customer> listcustomers = carLeaseRepository.ListCustomers();
                 
                 foreach (Customer customer in listcustomers)
+=======
+                List<Customer> listCustomers = carLeaseRepository.ListCustomers();
+
+                foreach (Customer customer in listCustomers)
+>>>>>>> Stashed changes
                 {
                     Console.WriteLine($"Customer Id: {customer.CustomerID}\n First Name: {customer.FirstName}\n Last Name: {customer.LastName}\n Email: {customer.Email}\n Phone Number: {customer.PhoneNumber}");
                     Console.WriteLine();
@@ -612,10 +769,16 @@ namespace CarRentalSystem
             }
         }
 
+        /// <summary>
+        /// Displays a list of leases, showing details such as lease ID, customer ID, vehicle ID, start date, and end date.
+        /// It uses the 'ICarLeaseRepository' interface and 'CarLeaseRepositoryImpl' class to retrieve the list of leases
+        /// using the 'ListLeaseHistory' method. The lease details are then displayed to the console. Any exceptions encountered
+        /// during the process are caught and displayed as error messages.
+        /// </summary>
         public static void ListLeaseHistory()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
             Console.WriteLine("--------------------------------------------------------------------------------------------------");
             Console.WriteLine("                                       List of Lease                                              ");
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
@@ -639,10 +802,16 @@ namespace CarRentalSystem
             }
         }
 
+        /// <summary>
+        /// Displays a list of rented cars, showing details such as vehicle ID, make, model, year, daily rate, status, passenger capacity, and engine capacity.
+        /// It uses the 'ICarLeaseRepository' interface and 'CarLeaseRepositoryImpl' class to retrieve the list of rented cars
+        /// using the 'ListRentedCars' method. The vehicle details are then displayed to the console. Any exceptions encountered
+        /// during the process are caught and displayed as error messages.
+        /// </summary>
         public static void ListRentedCars()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
             Console.WriteLine("--------------------------------------------------------------------------------------------------");
             Console.WriteLine("                                       List of Rented Cars                                              ");
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
@@ -668,13 +837,24 @@ namespace CarRentalSystem
             }
         }
 
+        /// <summary>
+        /// Records a payment by prompting the user to enter an existing lease ID and payment amount.
+        /// It uses the 'ICarLeaseRepository' interface and 'CarLeaseRepositoryImpl' class to find the lease by ID
+        /// using the 'FindLeaseById' method and then records the payment using the 'RecordPayment' method.
+        /// Any exceptions encountered during the process are caught and displayed as error messages.
+        /// </summary>
         public static void RecordPayment()
         {
+<<<<<<< Updated upstream
             ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+=======
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
+>>>>>>> Stashed changes
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("--------------------------------------------------------------------------------------------------");
             Console.WriteLine("                                       Enter Data for Recording Payment                      ");
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
+<<<<<<< Updated upstream
             Console.WriteLine("1. Add new lease record in payment table");
             Console.WriteLine("2. Add the existing lease record in payment table");
 
@@ -717,6 +897,18 @@ namespace CarRentalSystem
                 }
 
 
+=======
+
+            try
+            {
+                
+                Console.WriteLine("Please Enter the existing Lease id which you want to insert in payment record: ");
+                int leaseId = int.Parse(Console.ReadLine());
+                Lease lease1 = carLeaseRepository.FindLeaseById(leaseId);
+                Console.WriteLine("----------------Now Enter Amount to insert data in Payment table-------------------\n");
+                double paymentAmount1 = double.Parse(Console.ReadLine());
+                carLeaseRepository.RecordPayment(lease1, paymentAmount1);
+>>>>>>> Stashed changes
             }
             catch (Exception e)
             {
@@ -724,9 +916,14 @@ namespace CarRentalSystem
             }
         }
 
+        /// <summary>
+        /// Removes a car from the vehicle table by prompting the user to enter the car ID.
+        /// It uses the 'ICarLeaseRepository' interface and 'CarLeaseRepositoryImpl' class to remove the car
+        /// using the 'RemoveCar' method. Any exceptions encountered during the process are caught and displayed as error messages.
+        /// </summary>
         public static void RemoveCar()
         {
-            ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("--------------------------------------------------------------------------------------------------");
             Console.WriteLine("                                       Enter Car Id to Remove From Vehicle Table                  ");
@@ -742,9 +939,14 @@ namespace CarRentalSystem
             }
         }
 
+        /// <summary>
+        /// Removes a customer from the customer table by prompting the user to enter the customer ID.
+        /// It uses the 'ICarLeaseRepository' interface and 'CarLeaseRepositoryImpl' class to remove the customer
+        /// using the 'RemoveCustomer' method. CustomerNotFoundException is caught separately, and other exceptions are displayed as error messages.
+        /// </summary>
         public static void RemoveCustomer()
         {
-            ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("--------------------------------------------------------------------------------------------------");
             Console.WriteLine("                                       Enter Customer Id to Remove From Customer Table             ");
@@ -764,9 +966,15 @@ namespace CarRentalSystem
             }
         }
 
+        /// <summary>
+        /// Handles the process of returning a leased car by taking the Lease ID as user input.
+        /// Uses the 'ICarLeaseRepository' interface and 'CarLeaseRepositoryImpl' class to return the car
+        /// through the 'ReturnCar' method. Displays the updated list of cars after the return operation.
+        /// Catches LeaseNotFoundException and other exceptions separately and displays error messages.
+        /// </summary>
         public static void ReturnCar()
         {
-            ICarLeaseRepository carLeaseRepository = new ICarLeaseRepositoryImpl();
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("--------------------------------------------------------------------------------------------------");
             Console.WriteLine("                  Enter the Lease id for which you want to return car:                               ");
