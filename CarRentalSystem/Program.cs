@@ -440,6 +440,10 @@ namespace CarRentalSystem
                 DateTime startDate = DateTime.Parse(Console.ReadLine());
                 Console.WriteLine("Enter End Date (YYYY-MM-DD) of Lease:");
                 DateTime endDate = DateTime.Parse(Console.ReadLine());
+                if (endDate <= startDate)
+                {
+                    throw new Exception("End date should be greater than the start date.");
+                }
 
                 Lease newLease = carLeaseRepository.CreateLease(customerId, carId, startDate, endDate);
                 List<Lease> leaseList = carLeaseRepository.ListLeaseHistory();
