@@ -22,6 +22,7 @@ namespace CarRentalSystem.DAO
         /// If the insertion is successful (VehicleID > 0), a success message is displayed.
         /// If the insertion fails, an error message is displayed.
         /// </remarks>
+        
         public void AddCar(Vehicle car)
         {
             try
