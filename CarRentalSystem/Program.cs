@@ -69,7 +69,7 @@ namespace CarRentalSystem
                             CreateLease();
                             break;
                         case 4:
-                           
+
                             FindCarById();
                             break;
                         case 5:
@@ -187,18 +187,14 @@ namespace CarRentalSystem
             {
                 int custId = int.Parse(Console.ReadLine());
                 carLeaseRepository.FindCustomerById(custId);
-                List<Payment> payment = carLeaseRepository.RetrievePaymentHistory(custId);
-                foreach (Payment payments in payment)
+                List<Payment> paymentList = carLeaseRepository.RetrievePaymentHistory(custId);
+                foreach (Payment payment in paymentList)
                 {
-                    Console.WriteLine($"\nCustomerID : {custId}\nPaymentID : {payments.PaymentID}\nLeaseID : {payments.LeaseID}\nPaymentDate : {payments.PaymentDate}\nAmount: {payments.Amount}");
+                    Console.WriteLine($"\nCustomerID : {custId}\nPaymentID : {payment.PaymentID}\nLeaseID : {payment.LeaseID}\nPaymentDate : {payment.PaymentDate}\nAmount: {payment.Amount}");
                     Console.WriteLine();
                 }
             }
-            catch (CustomerNotFoundException c)
-            {
-                //error Already shown in findcarbyid method
-                Console.WriteLine(c.Message);
-            }
+
             catch (Exception e)
             {
                 Console.WriteLine("Error: " + e.Message);
@@ -253,11 +249,11 @@ namespace CarRentalSystem
             Console.WriteLine("--------------------------------------------------------------------------------------------------");
             Console.WriteLine("                                   Enter Lease Id to find                                          ");
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
-           
+
             try
             {
-                int leaseid = int.Parse(Console.ReadLine());
-                Lease foundLease = CarLeaseRepository.FindLeaseById(leaseid);
+                int leaseId = int.Parse(Console.ReadLine());
+                Lease foundLease = CarLeaseRepository.FindLeaseById(leaseId);
                 Console.WriteLine();
                 Console.WriteLine("--------------------------------------------------------------------------------------------------");
                 Console.WriteLine("                                            Lease ID Found                                                 ");
@@ -298,9 +294,10 @@ namespace CarRentalSystem
             Console.WriteLine("--------------------------------------------------------------------------------------------------");
             Console.WriteLine("                                   Enter Details of car                                            ");
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
+            ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
             try
             {
-                ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
+
                 Console.WriteLine("Enter Make of Car:");
                 string make = Console.ReadLine();
                 Console.WriteLine("Enter Model of Car:");
@@ -332,9 +329,9 @@ namespace CarRentalSystem
                 Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
 
                 Console.WriteLine("Fetching Cars After Insertion:\n ");
-                List<Vehicle> allCars = carLeaseRepository.ListAllCars();
+                List<Vehicle> carsList = carLeaseRepository.ListAllCars();
 
-                foreach (Vehicle car in allCars)
+                foreach (Vehicle car in carsList)
                 {
                     Console.WriteLine($"\tVehicle ID: {car.VehicleID}");
                     Console.WriteLine($"\tMake ID: {car.Make}");
@@ -374,8 +371,8 @@ namespace CarRentalSystem
             ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
             try
             {
-     
-               
+
+
                 Console.WriteLine("Enter First Name: ");
                 string firstName = Console.ReadLine();
                 Console.WriteLine("Enter Last Name: ");
@@ -395,11 +392,11 @@ namespace CarRentalSystem
                 carLeaseRepository.AddCustomer(newCustomer);
 
 
-                List<Customer> allCustomers = carLeaseRepository.ListCustomers();
+                List<Customer> customerList = carLeaseRepository.ListCustomers();
                 Console.WriteLine("--------------------------------------------------------------------------------------------------");
                 Console.WriteLine("                                   Fetching Customer After Insertion                              ");
                 Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
-                foreach (Customer customer in allCustomers)
+                foreach (Customer customer in customerList)
                 {
                     Console.WriteLine($"Customer Id: {customer.CustomerID}\n First Name: {customer.FirstName}\n Last Name: {customer.LastName}\n Email: {customer.Email}\n Phone Number: {customer.PhoneNumber}");
                     Console.WriteLine();
@@ -485,7 +482,7 @@ namespace CarRentalSystem
             Console.WriteLine("--------------------------------------------------------------------------------------------------");
             Console.WriteLine("                                   Enter Car Id to find                                          ");
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
-            
+
             try
             {
                 int carId = int.Parse(Console.ReadLine());
@@ -527,9 +524,9 @@ namespace CarRentalSystem
             ICarLeaseRepository carLeaseRepository = new CarLeaseRepositoryImpl();
             try
             {
-                List<Vehicle> listVehicle = carLeaseRepository.ListAllCars();
+                List<Vehicle> vehicleList = carLeaseRepository.ListAllCars();
 
-                foreach (Vehicle vehicle in listVehicle)
+                foreach (Vehicle vehicle in vehicleList)
                 {
                     Console.WriteLine($"Car Id: {vehicle.VehicleID}\nMake: {vehicle.Make}\nModel: {vehicle.Model}\nYear: {vehicle.Year}\nDaily Rate: {vehicle.DailyRate}\nStatus: {vehicle.Status}\nPassenger Capacity: {vehicle.PassengerCapacity}\nEngine Capacity: {vehicle.EngineCapacity}");
 
@@ -560,9 +557,10 @@ namespace CarRentalSystem
             Console.WriteLine("--------------------------------------------------------------------------------------------------");
             Console.WriteLine("                                   Enter Customer Id to find                                          ");
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
-            int custId = int.Parse(Console.ReadLine());
+
             try
             {
+                int custId = int.Parse(Console.ReadLine());
                 Customer foundCustomer = carLeaseRepository.FindCustomerById(custId);
                 Console.WriteLine();
                 Console.WriteLine("--------------------------------------------------------------------------------------------------");
@@ -669,11 +667,11 @@ namespace CarRentalSystem
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
             try
             {
-                List<Lease> ActiveLeaseList = carLeaseRepository.ListActiveLeases();
-                
-                if (ActiveLeaseList.Count > 0)
+                List<Lease> activeLeaseList = carLeaseRepository.ListActiveLeases();
+
+                if (activeLeaseList.Count > 0)
                 {
-                    foreach (Lease lease in ActiveLeaseList)
+                    foreach (Lease lease in activeLeaseList)
                     {
                         Console.WriteLine($"Lease ID: {lease.LeaseID}");
                         Console.WriteLine($"Customer ID: {lease.CustomerID}");
@@ -713,11 +711,11 @@ namespace CarRentalSystem
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
             try
             {
-                List<Vehicle> listAvailableCars = carLeaseRepository.ListAvailableCars();
-                
-                if (listAvailableCars.Count > 0)
+                List<Vehicle> listAvailableCarsList = carLeaseRepository.ListAvailableCars();
+
+                if (listAvailableCarsList.Count > 0)
                 {
-                    foreach (Vehicle vehicle in listAvailableCars)
+                    foreach (Vehicle vehicle in listAvailableCarsList)
                     {
                         Console.WriteLine($"Vehicle ID: {vehicle.VehicleID}");
                         Console.WriteLine($"Make ID: {vehicle.Make}");
@@ -758,10 +756,10 @@ namespace CarRentalSystem
             try
             {
 
-                List<Customer> listcustomers = carLeaseRepository.ListCustomers();
+                List<Customer> customersList = carLeaseRepository.ListCustomers();
 
-                foreach (Customer customer in listcustomers)
-                { 
+                foreach (Customer customer in customersList)
+                {
                     Console.WriteLine($"Customer Id: {customer.CustomerID}\n First Name: {customer.FirstName}\n Last Name: {customer.LastName}\n Email: {customer.Email}\n Phone Number: {customer.PhoneNumber}");
                     Console.WriteLine();
                 }
@@ -787,8 +785,8 @@ namespace CarRentalSystem
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
             try
             {
-                List<Lease> listLeaseHistory = carLeaseRepository.ListLeaseHistory();
-                foreach (Lease lease in listLeaseHistory)
+                List<Lease> leaseHistoryList = carLeaseRepository.ListLeaseHistory();
+                foreach (Lease lease in leaseHistoryList)
                 {
                     Console.WriteLine($"ID: {lease.LeaseID}");
                     Console.WriteLine($"Customer ID: {lease.CustomerID}");
@@ -820,8 +818,8 @@ namespace CarRentalSystem
             Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
             try
             {
-                List<Vehicle> rentedCars = carLeaseRepository.ListRentedCars();
-                foreach (Vehicle car in rentedCars)
+                List<Vehicle> rentedCarsList = carLeaseRepository.ListRentedCars();
+                foreach (Vehicle car in rentedCarsList)
                 {
                     Console.WriteLine($"ID: {car.VehicleID}");
                     Console.WriteLine($"Make: {car.Make}");
@@ -858,22 +856,15 @@ namespace CarRentalSystem
 
             try
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("--------------------------------------------------------------------------------------------------");
-                Console.WriteLine("                                       Enter Data for Recording Payment                      ");
-                Console.WriteLine("-------------------------------------------------------------------------------------------------\n");
 
-                
                 Console.WriteLine("Please Enter the existing Lease id which you want to insert in payment record: ");
                 int leaseId = int.Parse(Console.ReadLine());
-                Lease lease1 = carLeaseRepository.FindLeaseById(leaseId);
+                Lease lease = carLeaseRepository.FindLeaseById(leaseId);
                 Console.WriteLine("----------------Now Enter Amount to insert data in Payment table-------------------\n");
-                double paymentAmount1 = double.Parse(Console.ReadLine());
-                carLeaseRepository.RecordPayment(lease1, paymentAmount1);
-
-
+                double paymentAmount = double.Parse(Console.ReadLine());
+                carLeaseRepository.RecordPayment(lease, paymentAmount);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }

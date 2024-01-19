@@ -22,7 +22,7 @@ namespace CarRentalSystem.DAO
         /// If the insertion is successful (VehicleID > 0), a success message is displayed.
         /// If the insertion fails, an error message is displayed.
         /// </remarks>
-        
+
         public void AddCar(Vehicle car)
         {
             try
@@ -82,7 +82,7 @@ namespace CarRentalSystem.DAO
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         SqlDataReader dr = cmd.ExecuteReader();
-                        List<Vehicle> allCars = new List<Vehicle>();
+                        List<Vehicle> allCarsList = new List<Vehicle>();
                         while (dr.Read())
                         {
                             Vehicle car = new Vehicle
@@ -98,10 +98,10 @@ namespace CarRentalSystem.DAO
 
                             };
 
-                            allCars.Add(car);
+                            allCarsList.Add(car);
                         }
 
-                        return allCars;
+                        return allCarsList;
                     }
                 }
             }
@@ -339,11 +339,11 @@ namespace CarRentalSystem.DAO
 
                     // SQL query to delete the customer by ID
                     string query = $@"UPDATE Customer 
-                          SET FirstName = '{customer.FirstName}', 
-                              LastName = '{customer.LastName}', 
-                              Email = '{customer.Email}', 
-                              PhoneNumber = '{customer.PhoneNumber}' 
-                          WHERE CustomerID = {customer.CustomerID}";
+                                    SET FirstName = '{customer.FirstName}', 
+                                    LastName = '{customer.LastName}', 
+                                    Email = '{customer.Email}', 
+                                    PhoneNumber = '{customer.PhoneNumber}' 
+                                    WHERE CustomerID = {customer.CustomerID}";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
 
@@ -419,7 +419,7 @@ namespace CarRentalSystem.DAO
         /// </remarks>
         public List<Lease> ListActiveLeases()
         {
-            List<Lease> activeLeases = new List<Lease>();
+            List<Lease> activeLeasesList = new List<Lease>();
             try
             {
                 using (conn = UtilClass.GetConnection())
@@ -440,9 +440,9 @@ namespace CarRentalSystem.DAO
                                 EndDate = dr.GetDateTime(4),
                                 Type = dr.GetString(5)
                             };
-                            activeLeases.Add(lease);
+                            activeLeasesList.Add(lease);
                         }
-                        return activeLeases;
+                        return activeLeasesList;
                     }
                 }
             }
@@ -509,6 +509,8 @@ namespace CarRentalSystem.DAO
         /// If the type is "Monthly," it calculates the cost by multiplying the monthly rate by the number of months.
         /// An ArgumentException is thrown if an invalid lease type is provided.
         /// </remarks>
+
+        //concrete method
         public double CalculateLeaseCost(string type, DateTime startDate, DateTime endDate)
         {
             double dailyRate = 50.00;  // Adjust as needed
@@ -575,8 +577,8 @@ namespace CarRentalSystem.DAO
                         }
                         else
                         {
-                            throw new CustomerNotFoundException();
-
+                            Console.WriteLine($"Customer with customer id : {custId} has no payment history");
+                            return paymentList;
                         }
                     }
                 }
@@ -638,7 +640,7 @@ namespace CarRentalSystem.DAO
         /// </remarks>
         public List<Vehicle> ListAvailableCars()
         {
-            List<Vehicle> listAvailableCars = new List<Vehicle>();
+            List<Vehicle> listAvailableCarsList = new List<Vehicle>();
             try
             {
 
@@ -663,12 +665,12 @@ namespace CarRentalSystem.DAO
                                 EngineCapacity = dr.GetInt32(7)
                             };
 
-                            listAvailableCars.Add(lease);
+                            listAvailableCarsList.Add(lease);
 
                         }
 
 
-                        return listAvailableCars;
+                        return listAvailableCarsList;
                     }
                 }
             }
@@ -701,11 +703,11 @@ namespace CarRentalSystem.DAO
                     {
 
                         SqlDataReader dr = cmd.ExecuteReader();
-                        List<Customer> customer = new List<Customer>();
+                        List<Customer> customerList = new List<Customer>();
                         while (dr.Read())
                         {
 
-                            Customer cust = new Customer
+                            Customer customer = new Customer
                             {
                                 CustomerID = dr.GetInt32(0),
                                 FirstName = dr.GetString(1),
@@ -713,10 +715,10 @@ namespace CarRentalSystem.DAO
                                 Email = dr.GetString(3),
                                 PhoneNumber = dr.GetString(4)
                             };
-                            customer.Add(cust);
+                            customerList.Add(customer);
 
                         }
-                        return customer;
+                        return customerList;
                     }
                 }
 
@@ -739,7 +741,7 @@ namespace CarRentalSystem.DAO
         /// </remarks>
         public List<Lease> ListLeaseHistory()
         {
-            List<Lease> listLeaseHistory = new List<Lease>();
+            List<Lease> leaseHistoryList = new List<Lease>();
             try
             {
                 using (conn = UtilClass.GetConnection())
@@ -763,11 +765,11 @@ namespace CarRentalSystem.DAO
                                 Type = dr.GetString(5)
                             };
 
-                            listLeaseHistory.Add(lease);
+                            leaseHistoryList.Add(lease);
 
                         }
 
-                        return listLeaseHistory;
+                        return leaseHistoryList;
                     }
                 }
             }
@@ -794,7 +796,7 @@ namespace CarRentalSystem.DAO
         /// </remarks>
         public List<Vehicle> ListRentedCars()
         {
-            List<Vehicle> rentedCars = new List<Vehicle>();
+            List<Vehicle> rentedCarsList = new List<Vehicle>();
             try
             {
                 using (conn = UtilClass.GetConnection())
@@ -820,10 +822,10 @@ namespace CarRentalSystem.DAO
                                 EngineCapacity = dr.GetInt32(7)
                             };
 
-                            rentedCars.Add(car);
+                            rentedCarsList.Add(car);
                         }
 
-                        return rentedCars;
+                        return rentedCarsList;
                     }
                 }
             }
@@ -988,11 +990,9 @@ namespace CarRentalSystem.DAO
                     conn.Open();
 
                     // Check if the car is already returned
-                    string checkQuery = $@"
-            SELECT Vehicle.Status
-            FROM Vehicle
-            INNER JOIN Lease ON Vehicle.VehicleID = Lease.VehicleID
-            WHERE Lease.LeaseID = {leaseID}";
+                    string checkQuery = $@"SELECT Vehicle.Status FROM Vehicle
+                                        INNER JOIN Lease ON Vehicle.VehicleID = Lease.VehicleID
+                                        WHERE Lease.LeaseID = {leaseID}";
 
                     using (SqlCommand checkCmd = new SqlCommand(checkQuery, conn))
                     {
@@ -1000,24 +1000,23 @@ namespace CarRentalSystem.DAO
 
                         if (statusResult != null && statusResult.ToString().ToLower() == "returned")
                         {
-                            Console.WriteLine("Car has already been returned.");
+                            Console.WriteLine("\nCar has already been returned.\n");
                             return;
                         }
 
                         // Update the car status
-                        string updateQuery = $@"
-            UPDATE Vehicle
-            SET Status = 'returned'
-            FROM Vehicle
-            INNER JOIN Lease ON Vehicle.VehicleID = Lease.VehicleID
-            WHERE Lease.LeaseID = {leaseID}";
+                        string updateQuery = $@" UPDATE Vehicle
+                                             SET Status = 'returned' 
+                                             FROM Vehicle
+                                             INNER JOIN Lease ON Vehicle.VehicleID = Lease.VehicleID
+                                             WHERE Lease.LeaseID = {leaseID}  AND Vehicle.Status = 'notAvailable'";
 
                         SqlCommand cmd = new SqlCommand(updateQuery, conn);
                         int rowsAffected = cmd.ExecuteNonQuery();
 
                         if (rowsAffected > 0)
                         {
-                            Console.WriteLine("Car returned successfully.");
+                            Console.WriteLine("\nCar returned successfully.\n");
                         }
                         else
                         {
