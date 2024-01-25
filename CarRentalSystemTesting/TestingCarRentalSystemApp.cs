@@ -13,7 +13,7 @@ namespace CarRentalSystemTesting
     {
         private ICarLeaseRepository carLeaseRepository;
         private  int leaseID;
-        //public Lease l;
+
         [SetUp]
         public void Setup()
         {

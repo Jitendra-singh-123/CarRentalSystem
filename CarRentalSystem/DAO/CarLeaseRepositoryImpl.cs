@@ -30,16 +30,20 @@ namespace CarRentalSystem.DAO
                 using (conn = UtilClass.GetConnection())
                 {
                     conn.Open();
-                    string query = "INSERT INTO Vehicle (make, model, year, dailyRate, status, passengerCapacity, engineCapacity) VALUES (@make, @model, @year, @dailyRate, @status, @passengerCapacity, @engineCapacity); SELECT CAST(SCOPE_IDENTITY() AS INT);";
+                    // string query = "INSERT INTO Vehicle (make, model, year, dailyRate, status, passengerCapacity, engineCapacity) VALUES (@make, @model, @year, @dailyRate, @status, @passengerCapacity, @engineCapacity); SELECT CAST(SCOPE_IDENTITY() AS INT);";
+                    string query = $"spVehicle @option ='insert', @make={car.Make}, @model={car.Model}, @year={car.Year}, @dailyRate={car.DailyRate}, @status={car.Status}, @passengerCapacity={car.PassengerCapacity}, @engineCapacity={car.EngineCapacity}";
+                                       
+
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
-                        cmd.Parameters.AddWithValue("@make", car.Make);
-                        cmd.Parameters.AddWithValue("@model", car.Model);
-                        cmd.Parameters.AddWithValue("@year", car.Year);
-                        cmd.Parameters.AddWithValue("@dailyRate", car.DailyRate);
-                        cmd.Parameters.AddWithValue("@status", car.Status);
-                        cmd.Parameters.AddWithValue("@passengerCapacity", car.PassengerCapacity);
-                        cmd.Parameters.AddWithValue("@engineCapacity", car.EngineCapacity);
+                        //cmd.Parameters.AddWithValue("@option", "insert");
+                        //cmd.Parameters.AddWithValue("@make", car.Make);
+                        //cmd.Parameters.AddWithValue("@model", car.Model);
+                        //cmd.Parameters.AddWithValue("@year", car.Year);
+                        //cmd.Parameters.AddWithValue("@dailyRate", car.DailyRate);
+                        //cmd.Parameters.AddWithValue("@status", car.Status);
+                        //cmd.Parameters.AddWithValue("@passengerCapacity", car.PassengerCapacity);
+                        //cmd.Parameters.AddWithValue("@engineCapacity", car.EngineCapacity);
                         car.VehicleID = Convert.ToInt32(cmd.ExecuteScalar());
 
                         if (car.VehicleID > 0)
@@ -78,7 +82,7 @@ namespace CarRentalSystem.DAO
                 {
                     conn.Open();
 
-                    string query = "SELECT * FROM Vehicle"; // Retrieve all cars
+                    string query = "spVehicle"; // Retrieve all cars
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         SqlDataReader dr = cmd.ExecuteReader();
@@ -238,7 +242,7 @@ namespace CarRentalSystem.DAO
                 using (conn = UtilClass.GetConnection())
                 {
                     conn.Open();
-                    string query = $@"SELECT * FROM Vehicle WHERE vehicleID = {carID};";
+                    string query = $@"spVehicle @option = 'ById', @VehicleID = {carID}";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         SqlDataReader dr = cmd.ExecuteReader();
@@ -647,9 +651,11 @@ namespace CarRentalSystem.DAO
                 using (conn = UtilClass.GetConnection())
                 {
                     conn.Open();
-                    string query = "SELECT * FROM Vehicle WHERE Status = 'available'"; // Assuming leases within start and end dates are considered active
+                    // string query = "SELECT * FROM Vehicle WHERE Status = 'available'"; // Assuming leases within start and end dates are considered active
+                    string query = "spVehicle @option='AvailableCars'";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
+                        //cmd.Parameters.AddWithValue("@option", "AvailableCars");
                         SqlDataReader dr = cmd.ExecuteReader();
                         while (dr.Read())
                         {
@@ -802,7 +808,8 @@ namespace CarRentalSystem.DAO
                 using (conn = UtilClass.GetConnection())
                 {
                     conn.Open();
-                    string query = "SELECT * FROM Vehicle WHERE status = 'notAvailable'"; // Fetch all cars with status as 'notAvailable' (i.e., rented out)
+                    //  string query = "SELECT * FROM Vehicle WHERE status = 'notAvailable'"; // Fetch all cars with status as 'notAvailable' (i.e., rented out)
+                    string query = "spVehicle @option = 'RentedCars'";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
 
@@ -990,9 +997,11 @@ namespace CarRentalSystem.DAO
                     conn.Open();
 
                     // Check if the car is already returned
-                    string checkQuery = $@"SELECT Vehicle.Status FROM Vehicle
-                                        INNER JOIN Lease ON Vehicle.VehicleID = Lease.VehicleID
-                                        WHERE Lease.LeaseID = {leaseID}";
+                    //string checkQuery = $@"SELECT Vehicle.Status FROM Vehicle
+                    //                    INNER JOIN Lease ON Vehicle.VehicleID = Lease.VehicleID
+                    //                    WHERE Lease.LeaseID = {leaseID}";
+
+                    string checkQuery = $"spVehicle @option = 'CheckCarStatus' , @LeaseID={leaseID}";
 
                     using (SqlCommand checkCmd = new SqlCommand(checkQuery, conn))
                     {
@@ -1005,11 +1014,13 @@ namespace CarRentalSystem.DAO
                         }
 
                         // Update the car status
-                        string updateQuery = $@" UPDATE Vehicle
-                                             SET Status = 'returned' 
-                                             FROM Vehicle
-                                             INNER JOIN Lease ON Vehicle.VehicleID = Lease.VehicleID
-                                             WHERE Lease.LeaseID = {leaseID}  AND Vehicle.Status = 'notAvailable'";
+                        //string updateQuery = $@" UPDATE Vehicle
+                        //                     SET Status = 'returned' 
+                        //                     FROM Vehicle
+                        //                     INNER JOIN Lease ON Vehicle.VehicleID = Lease.VehicleID
+                        //                     WHERE Lease.LeaseID = {leaseID}  AND Vehicle.Status = 'notAvailable'";
+
+                        string updateQuery = $"spVehicle @option = 'UpdateCarStatus' , @LeaseID={leaseID}";
 
                         SqlCommand cmd = new SqlCommand(updateQuery, conn);
                         int rowsAffected = cmd.ExecuteNonQuery();
